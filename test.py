@@ -7,7 +7,7 @@ import random
 import time
 import os
 import pandas as pd
-
+print("Start")
 PLOT = False
 N_UE = 20
 ITER = 40000    
@@ -114,7 +114,7 @@ for i in range(len(parm)):
 
 
 
-env.initial_timestep();
+env.initial_timestep()
 print(env.wardrop_beta)
 
 #util.plot(ue, bs, env)

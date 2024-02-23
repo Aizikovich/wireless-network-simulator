@@ -1,0 +1,74 @@
+{
+    "parm": [
+        {
+            "pos": [2000, 2000, 40],
+            "freq": 800,
+            "numerology": 1,
+            "power": 20,
+            "gain": 16,
+            "loss": 3,
+            "bandwidth": 20,
+            "max_bitrate": 1000
+        },
+        {
+            "pos": [1000, 750, 40],
+            "freq": 1700,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 40,
+            "max_bitrate": 1000
+        },
+        {
+            "pos": [2000, 500, 40],
+            "freq": 1900,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 40,
+            "max_bitrate": 1000
+        },
+        {
+            "pos": [3000, 1000, 40],
+            "freq": 2000,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 25,
+            "max_bitrate": 55
+        },
+        {
+            "pos": [3000, 3000, 40],
+            "freq": 1700,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 40,
+            "max_bitrate": 1000
+        },
+        {
+            "pos": [2000, 3500, 40],
+            "freq": 1900,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 40,
+            "max_bitrate": 1000
+        },
+        {
+            "pos": [1000, 3000, 40],
+            "freq": 2000,
+            "numerology": 1,
+            "power": 1,
+            "gain": 5,
+            "loss": 1,
+            "bandwidth": 25,
+            "max_bitrate": 1000
+        }
+    ]
+}
