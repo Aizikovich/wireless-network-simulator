@@ -200,13 +200,17 @@ def handel_ts_control_msg(ue_ids, bss, msg, env):
     :param env: environment
 
     """
-    ue_id = msg["ue"]
-    from_cell = msg["fromCell"]
-    to_cell_id = msg["toCell"]
-    to_cell = find_bs_by_id(to_cell_id)
-    ue = find_ue_by_id(ue_id)
-    ue.connected_bs = to_cell
-    print(f"[INFO] successfully handed off UE {ue_id} from {from_cell} to {to_cell_id}")
+    try:
+        ue_id = msg["ue"]
+        from_cell = msg["fromCell"]
+        to_cell_id = msg["toCell"]
+        to_cell = find_bs_by_id(to_cell_id)
+        ue = find_ue_by_id(ue_id)
+        ue.connected_bs = to_cell
+    except Exception as e:
+        print(f"[ERROR] {e}")
+    finally:
+        print(f"[INFO] successfully handed off UE {ue_id} from {from_cell} to {to_cell_id}")
 
 
 

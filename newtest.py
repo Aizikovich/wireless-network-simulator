@@ -13,7 +13,7 @@ from queue import Queue
 app = Flask(__name__)
 
 
-def run_simulator(ts_queue=None):
+def init_network():
     N_UE = 20
     ITER = 4000
     random.seed(2)
@@ -40,17 +40,13 @@ def run_simulator(ts_queue=None):
             random.randint(0, env.x_limit - 1), random.randint(0, env.y_limit - 1), 1),
                            speed=1000, direction=random.randint(0, 359))
         ues.append(id)
-
     # insert BSs
     nr_bs2 = env.place_NR_base_station((1500, 1500, 40), 800, 2, 20, 16, 3, 100, total_bitrate=10000)
     bss.append(nr_bs2)
     for bs in parm:
         bss.append(init_bs(bs))
-
     env.initial_timestep()
     print(env.wardrop_beta)
-
-    util.plot_network_topology(ues, bss)
 
     for ue_id in ues:
         ue = util.find_ue_by_id(ue_id)
@@ -59,10 +55,17 @@ def run_simulator(ts_queue=None):
 
     env.next_timestep()
     print(util.find_ue_by_id(ues[1]).current_bs)
+    return env, ues, bss, ITER, error, latency, prbs, bitrates
 
-    for i in range(ITER):
-        if i % 1000 == 0:
-            util.plot_network_topology(ues, bss, f"Network topology step {i}")
+
+env, ues, bss, ITER, error, latency, prbs, bitrates = init_network()
+
+
+def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=None, prbs=None, bitrates=None):
+    i = 0
+    while i < ITER:
+        # if i % 1000 == 0:
+        # util.plot_network_topology(ues, bss, f"Network topology step {i}")
         if i % 100 == 0:
             print("-------------------", i, "-------------------")
             # if i != 0:
@@ -118,15 +121,14 @@ def run_simulator(ts_queue=None):
             else:
                 prbs[bsi].append(util.find_bs_by_id(bsi).frame_utilization / 64)
                 bitrates[bsi].append(util.find_bs_by_id(bsi).allocated_bitrate)
-
         ue_data = api.report_ues_msr(ues, bss, env)
         cell_data = api.report_cell_msr(ues, bss, env)
-
-        if ts_queue is not None:
-            control_msg = ts_queue.get()
-            util.handel_ts_control_msg(ues, bss, control_msg, env)
-
         env.next_timestep()
+        i += 1
+
+
+ts_thread = Thread(target=run_simulator, args=(ues, bss, env, ITER, error, latency, prbs, bitrates))
+ts_thread.start()
 
 
 def latency_calculation(latency, error, prbs, bitrates, bss):
@@ -147,11 +149,14 @@ def latency_calculation(latency, error, prbs, bitrates, bss):
 
 @app.route('/api/echo', methods=['POST'])
 def receive():
+    global env
+    print(f"env: {env}")
     try:
         received_data = request.json
         if received_data is not None:
-            print("OK \nTS Request:")
+            print("TS Request:")
             print(received_data)
+            print("OK - TS Request handled")
             received_data = None
         else:
             print("No UE data received", flush=True)
@@ -164,9 +169,4 @@ def receive():
 
 
 if __name__ == "__main__":
-    run_simulator()
-    ts_msgs_queue = Queue()
-    ts_thread = Thread(target=latency_calculation, args=(ts_msgs_queue,))
-    ts_thread.daemon = True
-    ts_thread.start()
     app.run(host='0.0.0.0', port=80)
