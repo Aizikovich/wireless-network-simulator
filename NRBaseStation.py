@@ -256,3 +256,6 @@ class NRBaseStation:
     def compute_r(self, ue_id, rsrp):
         N_prb, r = self.compute_nprb_NR(1, rsrp)
         return r
+
+    def __str__(self):
+        return f'BS{self.bs_id} NR'

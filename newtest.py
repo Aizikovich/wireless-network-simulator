@@ -2,16 +2,13 @@ import environment
 import util
 import random
 import time
-import os
 import pandas as pd
 import json
 import api
 from flask import Flask, request
 from threading import Thread
-from queue import Queue
 
 app = Flask(__name__)
-
 
 def init_network():
     N_UE = 20
@@ -43,7 +40,7 @@ def init_network():
     # insert BSs
     nr_bs2 = env.place_NR_base_station((1500, 1500, 40), 800, 2, 20, 16, 3, 100, total_bitrate=10000)
     bss.append(nr_bs2)
-    for bs in parm:
+    for bs in parm[:5]:
         bss.append(init_bs(bs))
     env.initial_timestep()
     print(env.wardrop_beta)
@@ -57,9 +54,8 @@ def init_network():
     print(util.find_ue_by_id(ues[1]).current_bs)
     return env, ues, bss, ITER, error, latency, prbs, bitrates
 
-
 env, ues, bss, ITER, error, latency, prbs, bitrates = init_network()
-
+print("Network initialized")
 
 def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=None, prbs=None, bitrates=None):
     i = 0
@@ -67,6 +63,7 @@ def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=N
         # if i % 1000 == 0:
         # util.plot_network_topology(ues, bss, f"Network topology step {i}")
         if i % 100 == 0:
+            util.plot_network_topology(ues, bss, f"Network topology step {i}")
             print("-------------------", i, "-------------------")
             # if i != 0:
             #     for elem in ues:
@@ -126,10 +123,8 @@ def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=N
         env.next_timestep()
         i += 1
 
-
 ts_thread = Thread(target=run_simulator, args=(ues, bss, env, ITER, error, latency, prbs, bitrates))
 ts_thread.start()
-
 
 def latency_calculation(latency, error, prbs, bitrates, bss):
     ue_latency = {}
@@ -146,7 +141,6 @@ def latency_calculation(latency, error, prbs, bitrates, bss):
         df = pd.DataFrame.from_dict(bitrates[bsi])
         df.to_csv(".\\data\\bitrate_BS" + str(bsi) + ".csv", sep=";")
 
-
 @app.route('/api/echo', methods=['POST'])
 def receive():
     global env
@@ -156,17 +150,18 @@ def receive():
         if received_data is not None:
             print("TS Request:")
             print(received_data)
+            util.handel_ts_control_msg(ues, bss, received_data, env)
             print("OK - TS Request handled")
-            received_data = None
+
         else:
-            print("No UE data received", flush=True)
-            time.sleep(1)
-        return "UE Data received successfully!"
+            print("No TS data received", flush=True)
+
+        return "TS Data received successfully!"
 
     except Exception as e:
         print("Error:", e, flush=True)
-        return "Error occurred while receiving UE data"
-
+        return "Error occurred while receiving TS data"
 
 if __name__ == "__main__":
+    print("Starting the server")
     app.run(host='0.0.0.0', port=80)
