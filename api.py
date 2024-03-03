@@ -51,19 +51,23 @@ def report_ues_msr(ue_id_list, bslist, env):
         ue_report["x"] = x
         ue_report["y"] = y
         serving_bs = list(ue.current_bs.keys())[0]
-        ue_report["nrCellIdentity"] = serving_bs
-        ue_thp =  ue.current_bs[serving_bs]
+        ue_report["nrCellIdentity"] = str(serving_bs)
+
+        ue_thp = ue.current_bs[serving_bs]
         ue_report["DRB.UEThpDl"] = ue_thp
+
         bss_rsrp = env.discover_bs(ue_id)
         serving_rsrp = bss_rsrp[serving_bs]
         serving_sinr = find_bs_by_id(serving_bs).compute_sinr(bss_rsrp)
         ue_report["RF.serving.RSRP"] = serving_rsrp
         ue_report["RF.serving.RSSINR"] = serving_sinr
+
         nb_bs = list(bss_rsrp.keys())
         nb_bs.remove(serving_bs)
         # for every neighbor base station
         for bn_bs_id in nb_bs:
-            ue_report[f"nbCellIdentity_{nb_bs.index(bn_bs_id)}"] = bn_bs_id
+            ue_report[f"nbCellIdentity_{nb_bs.index(bn_bs_id)}"] = str(bn_bs_id)
+
             curr_bs = find_bs_by_id(bn_bs_id)
             rsrp = bss_rsrp[bn_bs_id]
             sinr = curr_bs.compute_sinr(env.discover_bs(ue_id))
@@ -74,7 +78,9 @@ def report_ues_msr(ue_id_list, bslist, env):
 
 
         data.append(ue_report)
-        print(f"\n\n example ue data: {data[0]} \n\n")
+        # print(f"\n\n example ue data: {data[0]} \n\n")
+    # for k, v in data[0].items():
+    #     print(f"{k}: {v} , type: {type(v)}")
     ue_data = json.dumps(data)
     try:
         response = requests.post('http://127.0.0.1:5001/receive_ue', json=json.loads(ue_data))
@@ -82,9 +88,6 @@ def report_ues_msr(ue_id_list, bslist, env):
     except Exception as e:
         print(f"Error While sending cell data:\n{e}")
     return None
-
-
-
 
 
 def report_cell_msr(ue_id_list, bslist, env):
@@ -112,10 +115,10 @@ def report_cell_msr(ue_id_list, bslist, env):
             "measPeriodPdcpBytes": random.randint(1, 100),
         }
         jsons.append(measurements)
-    print(f"\n\n example cell data: {jsons[0]} \n\n")
+    # print(f"\n\n example cell data: {jsons[0]} \n\n")
     cell_data = json.dumps(jsons)
     try:
-        response = requests.post('http://127.0.0.1:5000/receive_cell', json=json.loads(cell_data))
+        response = requests.post('http://127.0.0.1:5002/receive_cell', json=json.loads(cell_data))
         return response
     except Exception as e:
         print(f"Error While sending cell data:\n{e}")

@@ -10,6 +10,7 @@ from threading import Thread
 
 app = Flask(__name__)
 
+
 def init_network():
     N_UE = 20
     ITER = 4000
@@ -54,8 +55,10 @@ def init_network():
     print(util.find_ue_by_id(ues[1]).current_bs)
     return env, ues, bss, ITER, error, latency, prbs, bitrates
 
+
 env, ues, bss, ITER, error, latency, prbs, bitrates = init_network()
 print("Network initialized")
+
 
 def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=None, prbs=None, bitrates=None):
     i = 0
@@ -122,9 +125,12 @@ def run_simulator(ues=None, bss=None, env=None, ITER=4000, error=None, latency=N
         cell_data = api.report_cell_msr(ues, bss, env)
         env.next_timestep()
         i += 1
+        print(f"send metrics to RIC | step: {i}")
+
 
 ts_thread = Thread(target=run_simulator, args=(ues, bss, env, ITER, error, latency, prbs, bitrates))
 ts_thread.start()
+
 
 def latency_calculation(latency, error, prbs, bitrates, bss):
     ue_latency = {}
@@ -140,6 +146,7 @@ def latency_calculation(latency, error, prbs, bitrates, bss):
         df.to_csv(".\\data\\resourceblocks_BS" + str(bsi) + ".csv", sep=";")
         df = pd.DataFrame.from_dict(bitrates[bsi])
         df.to_csv(".\\data\\bitrate_BS" + str(bsi) + ".csv", sep=";")
+
 
 @app.route('/api/echo', methods=['POST'])
 def receive():
@@ -161,6 +168,7 @@ def receive():
     except Exception as e:
         print("Error:", e, flush=True)
         return "Error occurred while receiving TS data"
+
 
 if __name__ == "__main__":
     print("Starting the server")
