@@ -39,7 +39,7 @@ def init_network():
                            speed=1000, direction=random.randint(0, 359))
         ues.append(id)
     # insert BSs
-    nr_bs2 = env.place_NR_base_station((1500, 1500, 40), 800, 2, 20, 16, 3, 100, total_bitrate=10000)
+    nr_bs2 = env.place_NR_base_station((1000, 3000, 40), 800, 2, 20, 16, 3, 100, total_bitrate=10000)
     bss.append(nr_bs2)
     for bs in parm[:5]:
         bss.append(init_bs(bs))

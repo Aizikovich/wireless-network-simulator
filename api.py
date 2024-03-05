@@ -30,11 +30,11 @@ def report_ues_msr(ue_id_list, bslist, env):
             "rsrp_nb2": random.uniform(1.0, 100.0),
             "rsrp_nb3": random.uniform(1.0, 100.0),
             "rsrp_nb4": random.uniform(1.0, 100.0),
-            "rsrq_nb0": 'x',  # 'x' means 'not available'
-            "rsrq_nb1": 'x',
-            "rsrq_nb2": 'x',
-            "rsrq_nb3": 'x',
-            "rsrq_nb4": 'x',
+            "rsrq_nb0": -40.0,  # 'x' means 'not available'
+            "rsrq_nb1": -40.0,
+            "rsrq_nb2": -40.0,
+            "rsrq_nb3": -40.0,
+            "rsrq_nb4": -40.0,
             "rssinr_nb0": random.uniform(1.0, 100.0),
             "rssinr_nb1": random.uniform(1.0, 100.0),
             "rssinr_nb2": random.uniform(1.0, 100.0),
